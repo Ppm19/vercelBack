@@ -2,23 +2,32 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
-require('./db');
+const mongoose = require('mongoose');
+const Alumno = require('./models/Alumno'); // Importar modelo
+
+// Configuración de conexión a MongoDB
+mongoose.connect('mongodb://localhost:27017/roberExpress')
+  .then(() => {
+    console.log('Conexión a MongoDB exitosa.');
+  })
+  .catch((err) => {
+    console.error('Error al conectar a MongoDB:', err);
+  });
 
 const app = express();
 
+// Configuración de CORS
 const corsOptions = {
-    origin: 'https://vercel-front-sage.vercel.app',
+    origin: 'https://vercel-front-sage.vercel.app', // URL de tu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
-
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
 
-const Alumno = require('./models/Alumno');
-
+// Rutas de la API
 app.get('/alumnos', async (req, res) => {
     try {
         const alumnos = await Alumno.find();
